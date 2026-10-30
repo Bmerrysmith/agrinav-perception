@@ -6,6 +6,12 @@ Senior engineering project, Florida Gulf Coast University. I led object detectio
 
 > Research code, not a deployed system. Nothing here drives a sprayer or any actuator; the inference entry point is intentionally a disabled safety stub.
 
+## Start here
+
+- **Data integrity:** [deterministic dataset builder](src/agrinav/data/build_rice_phase2.py) and [validation tests](tests/test_build_rice_phase2.py).
+- **Training and evaluation:** [baseline controls](src/agrinav/training/baseline_det_control.py), [COCO evaluator](src/agrinav/evaluation/runner.py), and [baseline findings](docs/baselines.md).
+- **Engineering decisions:** [architecture records](docs/adr/) and [CPU CI workflow](.github/workflows/ci.yml).
+
 ## What's in here
 
 | Area | What it does |
@@ -28,16 +34,22 @@ Senior engineering project, Florida Gulf Coast University. I led object detectio
 | Segmentation ablation (weed IoU, only the model varies) | Custom 0.202, DeepLabV3 0.483, SegFormer-B2 0.522 |
 | Same-protocol detection baseline | Custom detector 0.092 val AP, stock Faster R-CNN ~0.179 |
 
-The last two rows are the most important result: under an identical split, resolution, and evaluator, stock architectures beat the custom ones. The project now ports the custom ideas onto a trusted baseline instead of defending a bespoke stack. Details: `docs/baselines.md` and `docs/research/RICESEG_PRETRAIN_RESULTS.md`.
+The last two rows are the most important result: under an identical split, resolution, and evaluator, stock architectures beat the custom ones. The project now ports the custom ideas onto a trusted baseline instead of defending a bespoke stack. Details: [baseline comparison](docs/baselines.md) and [segmentation results and limitations](docs/research/RICESEG_PRETRAIN_RESULTS.md). These are development findings; the small-set overfit gate is a pipeline check, not held-out field accuracy.
 
 ## Quick start
 
 ```bash
-python -m venv .venv && . .venv/bin/activate
-pip install -e ".[dev]"
+python -m venv .venv
+# macOS / Linux:
+source .venv/bin/activate
+# Windows PowerShell (use instead of the line above):
+# .\.venv\Scripts\Activate.ps1
+
+python -m pip install -e ".[dev]"
 agrinav --help
-pytest
-ruff check . && black --check .
+python -m pytest
+ruff check .
+black --check .
 ```
 
 The base install (`pip install -e .`) is data tooling only; `.[train]` adds torch, torchvision, and transformers.
