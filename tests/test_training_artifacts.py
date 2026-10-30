@@ -108,11 +108,13 @@ def test_checkpoint_loads_in_a_clean_subprocess(tmp_path):
     wd.train_with_progress(config)
 
     checkpoint_path = str(tmp_path / "ckpt" / "weeddet_best.pth")
-    script = textwrap.dedent(f"""
+    script = textwrap.dedent(
+        f"""
         from agrinav.training.weeddet_train import load_checkpoint_model
         model = load_checkpoint_model({checkpoint_path!r}, device="cpu")
         print("classes", model.num_classes)
-        """)
+        """
+    )
     result = subprocess.run(
         [sys.executable, "-c", script], capture_output=True, text=True, timeout=300
     )
